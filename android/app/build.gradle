@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "com.AIT_MOBILE.shiftsmart"
-        minSdk = 23 // ✅ UPDATED: Recommended for Notification Support
+        minSdkVersion = flutter.minSdkVersion // ✅ UPDATED: Recommended for Notification Support
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

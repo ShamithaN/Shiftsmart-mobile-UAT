@@ -141,7 +141,7 @@ class _EmpSidenavState extends State<EmpSidenav> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const EmployeeSettings(),
+                          builder: (_) => EmployeeSettings(),
                           settings:
                               const RouteSettings(name: 'EmployeeSettings'),
                         ),

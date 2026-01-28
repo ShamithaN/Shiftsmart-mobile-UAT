@@ -57,12 +57,12 @@ class _EmpBottomnavbarState extends State<EmpBottomnavbar> {
           ClipPath(
             clipper: RightCornerClipper(),
             child: Container(
-              height: 90,
+              height: 100,
               color: const Color.fromARGB(252, 60, 82, 170),
             ),
           ),
           Positioned(
-              bottom: 8,
+              bottom: 18,
               left: 0,
               right: 0,
               child: Row(

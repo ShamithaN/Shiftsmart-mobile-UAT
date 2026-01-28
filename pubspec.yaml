@@ -70,6 +70,7 @@ dependencies:
   pdf: ^3.11.3
   flutter_secure_storage: ^9.2.4
   flutter_dotenv: ^5.2.1
+  local_auth: ^2.1.9
   
   
 dev_dependencies:

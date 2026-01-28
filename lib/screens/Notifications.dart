@@ -201,7 +201,11 @@ class _NotificationsState extends State<Notifications> {
                   ? const Center(
                       child: Text(
                         "No notifications to display.",
-                        style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18, // Larger font size
+                            fontWeight: FontWeight.w600, // Optional: medium bold
+                          ),
                       ),
                     )
                   : SingleChildScrollView(
