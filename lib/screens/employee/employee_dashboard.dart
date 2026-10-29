@@ -290,7 +290,7 @@ class _EmployeedashboardState extends State<Employeedashboard> {
           if (jobs.isEmpty)
             const Center(
               // ========== UPDATED CODE START ==========
-              child: const Center(
+              child: Center(
                 child: Text(
                   "No upcoming job scheduled.",
                   style: TextStyle(

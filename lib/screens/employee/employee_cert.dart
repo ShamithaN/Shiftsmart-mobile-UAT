@@ -48,10 +48,19 @@ class _EmployeecertState extends State<Employeecert> {
       final int? empId = prefs.getInt('employeeId') ?? prefs.getInt('userId');
 
       if (empId != null) {
-        final docs = await EmployeeService().fetchEmployeeDocuments(empId);
+        final service = EmployeeService();
+        // Fetch regular docs and resubmissions in parallel
+        final results = await Future.wait([
+          service.fetchEmployeeDocuments(empId),
+          service.fetchEmployeeResubmissions(empId),
+        ]);
+
+        final docs = results[0];
+        final resubs = results[1];
+
         if (mounted) {
           setState(() {
-            _certificates = docs;
+            _certificates = [...docs, ...resubs];
             _isLoading = false;
           });
         }

@@ -65,7 +65,7 @@ class _EmployeeshiftviewState extends State<Employeeshiftview> {
   String myStatus = "Pending";
   String? myRejectionReason;
   bool isActionLoading = false;
-  List<File> _capturedPhotos = [];
+  final List<File> _capturedPhotos = [];
 
   final SiteService _siteService = SiteService();
   final AttendanceService _attendanceService = AttendanceService();
@@ -265,8 +265,8 @@ class _EmployeeshiftviewState extends State<Employeeshiftview> {
   Future<void> _loadSiteData() async {
     setState(() => isLoading = true);
     try {
-      if (widget.job.siteId == 0 || widget.job.siteId == null) return;
-      final site = await _siteService.fetchSiteById(widget.job.siteId!);
+      if (widget.job.siteId == 0) return;
+      final site = await _siteService.fetchSiteById(widget.job.siteId);
       if (site != null) currentSite = site;
     } catch (e) {
       debugPrint('❌ Error loading site data: $e');
@@ -360,7 +360,7 @@ class _EmployeeshiftviewState extends State<Employeeshiftview> {
                 // Add to history if unique
                 bool exists = breaks.any((b) =>
                     b['start']!.isAtSameMomentAs(backendBreakStart) &&
-                    b['end']!.isAtSameMomentAs(backendBreakEnd!));
+                    b['end']!.isAtSameMomentAs(backendBreakEnd));
 
                 if (!exists) {
                   breaks.add({
@@ -937,9 +937,10 @@ class _EmployeeshiftviewState extends State<Employeeshiftview> {
           });
         }
         await _saveShiftProgress();
-        if (mounted)
+        if (mounted) {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('Break ended!')));
+        }
       }
     } catch (e) {
       debugPrint('Break end error: $e');

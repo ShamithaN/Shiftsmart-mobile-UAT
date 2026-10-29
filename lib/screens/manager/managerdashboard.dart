@@ -16,7 +16,6 @@ import 'package:shiftsmart/widgets/gradientbox.dart';
 import 'package:shiftsmart/widgets/gradienthorizontal.dart';
 import 'package:shiftsmart/models/project.dart';
 import 'package:shiftsmart/services/attendance_service.dart';
-import 'package:shiftsmart/screens/manager/manager_pending_requests.dart';
 
 class Managerdashboard extends StatefulWidget {
   const Managerdashboard({super.key});

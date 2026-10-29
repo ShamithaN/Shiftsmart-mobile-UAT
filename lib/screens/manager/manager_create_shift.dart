@@ -123,7 +123,7 @@ class _ManagercreateshiftState extends State<Managercreateshift> {
       }
     } catch (e) {}
 
-    String newTitle = "${selectedJob.title}";
+    String newTitle = selectedJob.title;
     if (formattedDate.isNotEmpty) newTitle += " - $formattedDate";
     if (start.isNotEmpty && end.isNotEmpty) newTitle += " $start-$end";
     if (matchingSite.siteName.isNotEmpty) newTitle += " (${matchingSite.siteName})";
@@ -696,7 +696,7 @@ class _ManagercreateshiftState extends State<Managercreateshift> {
                                 fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(height: 8),
-                      Container(
+                      SizedBox(
                         height: 45,
                         width: double.infinity,
                         child: SingleChildScrollView(
@@ -738,8 +738,7 @@ class _ManagercreateshiftState extends State<Managercreateshift> {
                             onPrimary: Colors.white,
                             surface: Color(0xFF2A3243),
                             onSurface: Colors.white,
-                          ),
-                          dialogBackgroundColor: const Color(0xFF2A3243),
+                          ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF2A3243)),
                         ),
                         child: CalendarDatePicker(
                           initialDate: tempDate ?? DateTime.now(),

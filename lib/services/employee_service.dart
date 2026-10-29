@@ -19,7 +19,7 @@ class EmployeeService {
 
   String fetchEmpKey = dotenv.env['FETCH_EMP_KEY'] ?? "";
   String get uploadKey => dotenv.env['CERT_UPLOAD_KEY'] ?? '';
-  String get fetchKey => dotenv.env['FETCH_DOCUMENTS1_KEY'] ?? '';
+  String get fetchKey => dotenv.env['EMP_DOCS1_KEY'] ?? '';
   String empNameMap = dotenv.env['EMP_NAME_MAP_KEY'] ?? "";
 
   EmployeeService() {
@@ -29,6 +29,10 @@ class EmployeeService {
 
   // ✅ Keys for documents
   final String empDocsKey = dotenv.env['EMP_DOCS_KEY'] ?? '';
+  final String empDocs1Key = dotenv.env['EMP_DOCS1_KEY'] ?? '';
+  final String getResubmissionsKey = dotenv.env['GET_RESUBMISSIONS_KEY'] ?? '';
+  final String resubmitDocKey = dotenv.env['RESUBMIT_DOC_KEY'] ?? '';
+  final String resubmissionEmailKey = dotenv.env['RESUBMISSION_EMAIL_KEY'] ?? '';
   final String certUploadKey = dotenv.env['CERT_UPLOAD_KEY'] ?? '';
 
   // --- 1. Fetch All Employees ---
@@ -179,7 +183,7 @@ class EmployeeService {
     debugPrint("🔍 Fetching Documents from: $url");
 
     try {
-      final response = await _apiClient.get(url, useAuth: false);
+      final response = await _apiClient.get(url, useAuth: true);
 
       debugPrint("📦 Document Fetch Status: ${response.statusCode}");
       debugPrint("📦 Document Fetch Body: ${response.body.length > 300 ? response.body.substring(0, 300) : response.body}");
@@ -219,6 +223,80 @@ class EmployeeService {
     } catch (e) {
       debugPrint("❌ Error fetching profile docs: $e");
       return [];
+    }
+  }
+  // --- 🌟 6. Fetch Resubmissions for an Employee ---
+  Future<List<EmployeeCertificate>> fetchEmployeeResubmissions(int empId) async {
+    // Use /document/employee/{id}/resubmissions with GET_RESUBMISSIONS_KEY
+    // Base URL is slightly different for this handler based on user provided list
+    // Handler: Document_GetResubmissionsHandler
+    // Route: /api/document/employee/{id}/resubmissions
+    final url = '$baseUrl/document/employee/$empId/resubmissions?code=$getResubmissionsKey';
+    debugPrint("🔍 Fetching Resubmissions from: $url");
+
+    try {
+      final response = await _apiClient.get(url, useAuth: true);
+
+      debugPrint("📦 Resubmission Fetch Status: ${response.statusCode}");
+      debugPrint("📦 Resubmission Fetch Body: ${response.body.length > 300 ? response.body.substring(0, 300) : response.body}");
+
+      if (response.statusCode == 200) {
+        final dynamic data = jsonDecode(response.body);
+
+        List<dynamic> rawDocs = [];
+        if (data is List) {
+          rawDocs = data;
+        } else if (data is Map<String, dynamic>) {
+          rawDocs = data['Documents'] ?? data['Result'] ?? [];
+        }
+
+        debugPrint("✅ Resubmissions parsed: ${rawDocs.length}");
+
+        return rawDocs.map<EmployeeCertificate>((doc) {
+          return EmployeeCertificate(
+            documentId: doc['documentId'] ?? 0,
+            employeeId: empId,
+            fileName: doc['fileName'] ?? doc['documentType'] ?? 'Document',
+            fileType: doc['documentType'] ?? 'General',
+            documentUrl: doc['documentUrl'] ?? '',
+            documentType: doc['documentType'] ?? 'General',
+            status: doc['status'] ?? 'Pending Resubmission',
+            uploadedAt: doc['uploadedAt'] ?? DateTime.now().toIso8601String(),
+            remarks: doc['remarks'],
+            updatedAt: doc['updatedAt'],
+          );
+        }).toList();
+      } else {
+        debugPrint("⚠️ Failed to fetch resubmissions. Status: ${response.statusCode}");
+        return [];
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching resubmissions: $e");
+      return [];
+    }
+  }
+  // --- 🌟 7. Resubmit a Document ---
+  Future<bool> resubmitDocument(int empId, Map<String, dynamic> docData) async {
+    final url = '$baseUrl/document/resubmit?code=$resubmitDocKey';
+    debugPrint("🚀 Resubmitting Document to: $url");
+    try {
+      final response = await _apiClient.post(url, body: docData, useAuth: true);
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      debugPrint("❌ Resubmit Error: $e");
+      return false;
+    }
+  }
+
+  // --- 🌟 8. Trigger Resubmission Email ---
+  Future<bool> sendResubmissionEmail() async {
+    final url = '$baseUrl/document/resend-declined?code=$resubmissionEmailKey';
+    try {
+      final response = await _apiClient.post(url, useAuth: true);
+      return response.statusCode == 200;
+    } catch (e) {
+      debugPrint("❌ Email Error: $e");
+      return false;
     }
   }
 }
